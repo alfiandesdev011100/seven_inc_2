@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import Layout from "../components/Layout";
 import Footer from "../components/Footer";
 import Container from "../components/Container";
+
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000/api";
 
 const CardArray = [
     { title: "Integritas", styleType: 1, description: "Sikap dasar setiap insan Seven INC. untuk selaras antara pikiran, ucapan, dan tindakan, menjaga kejujuran, tanggung jawab, serta kerahasiaan sesuai visi dan amanah perusahaan.", image: "/assets/img/vectorSalaman.png" },
@@ -29,9 +32,46 @@ const CARD_GAP = 52; // gap-x-13 ≈ 52px
 const VISIBLE = 2;   // tampilkan 2 kartu
 
 const TentangKamiFull = () => {
+    // API Data
+    const [about, setAbout] = useState(null);
+    
+    // Fetch tentang kami dari API
+    useEffect(() => {
+        const fetchAbout = async () => {
+            try {
+                const response = await axios.get(`${API_BASE}/public/about`);
+                if (response.data.data) {
+                    setAbout(response.data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching about:", error);
+            }
+        };
+        
+        fetchAbout();
+    }, []);
+    
+    // Gunakan data dari API atau fallback
+    const displayCardArray = about?.core_paragraphs && Array.isArray(about.core_paragraphs) 
+        ? about.core_paragraphs.map(item => ({
+            title: item.core_title || item.title || "",
+            styleType: item.styleType || 1,
+            description: item.core_paragraph || item.description || "",
+            image: item.image || "/assets/img/vectorSalaman.png"
+          }))
+        : CardArray;
+    
+    const displayHeroImages = about?.image_url1 || about?.image_url2 || about?.image_url3 
+        ? [
+            { src: about.image_url1 || "/assets/img/Tempat.png", alt: "Seven INC - 1" },
+            { src: about.image_url2 || "/assets/img/Internship.png", alt: "Seven INC - 2" },
+            { src: about.image_url3 || "/assets/img/cardLoker.png", alt: "Seven INC - 3" },
+          ]
+        : HERO_IMAGES;
+    
     const [startIndex, setStartIndex] = useState(0);
     const isFirst = startIndex === 0;
-    const isLast = startIndex + VISIBLE >= CardArray.length;
+    const isLast = startIndex + VISIBLE >= displayCardArray.length;
 
     // --- Hero auto-rotate ---
     const [heroIndex, setHeroIndex] = useState(0);
@@ -107,7 +147,7 @@ const TentangKamiFull = () => {
                         {/* Tumpuk semua gambar, yang aktif opacity-2000 */}
                         <div className="w-full flex justify-end">
                             <div className="relative max-w-[733px] h-[561px] w-full">
-                                {HERO_IMAGES.map((img, index) => (
+                                {displayHeroImages.map((img, index) => (
                                     <img
                                         key={index}
                                         src={img.src}
@@ -210,7 +250,7 @@ const TentangKamiFull = () => {
                                         willChange: "transform",
                                     }}
                                 >
-                                    {CardArray.map((card, index) => (
+                                    {displayCardArray.map((card, index) => (
                                         <div
                                             key={index}
                                             className="group border border-gray-300 rounded-xl shadow hover:shadow-md transition text-center flex-none"

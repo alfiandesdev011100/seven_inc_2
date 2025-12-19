@@ -34,7 +34,7 @@ const LowonganKerjaAdmin = () => {
         setError(null);
         try {
             const response = await fetch(
-                "http://localhost:8000/api/admin/job-works",
+                "http://localhost:8000/api/admin/job-vacancies",
                 { headers }
             );
             if (!response.ok) throw new Error("Gagal mengambil lowongan");
@@ -83,7 +83,7 @@ const LowonganKerjaAdmin = () => {
 
         try {
             const response = await fetch(
-                `http://localhost:8000/api/admin/job-works/${id}`,
+                `http://localhost:8000/api/admin/job-vacancies/${id}`,
                 { method: "DELETE", headers }
             );
 
@@ -105,8 +105,8 @@ const LowonganKerjaAdmin = () => {
         try {
             const method = editingId ? "PUT" : "POST";
             const url = editingId
-                ? `http://localhost:8000/api/admin/job-works/${editingId}`
-                : "http://localhost:8000/api/admin/job-works";
+                ? `http://localhost:8000/api/admin/job-vacancies/${editingId}`
+                : "http://localhost:8000/api/admin/job-vacancies";
 
             const response = await fetch(url, {
                 method,

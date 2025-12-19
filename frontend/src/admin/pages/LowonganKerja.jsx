@@ -8,7 +8,7 @@ import Container from "../components/Container";
 // === KONFIG API (Hero Lowongan Kerja)
 const API_BASE = "http://127.0.0.1:8000/api";
 const ENDPOINT_WORKS_LATEST = `${API_BASE}/works/latest`;
-const ENDPOINT_JOBS = `${API_BASE}/job-works`;
+const ENDPOINT_JOBS = `${API_BASE}/public/job-vacancies`;
 
 // === Fallback Hero (dipakai kalau API kosong/error)
 const FALLBACK_HERO = {

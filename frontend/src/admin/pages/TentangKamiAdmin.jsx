@@ -1,45 +1,85 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000/api";
 
 const TentangKamiAdmin = () => {
     const [data, setData] = useState({
-        title: "Tentang Kami",
-        description: "",
-        vision: "",
-        mission: "",
-        values: "",
+        subtitle: "",
+        headline: "",
+        left_p1: "",
+        left_p2: "",
+        left_p3: "",
+        right_p1: "",
+        right_p2: "",
+        core_title: "",
+        core_headline: "",
+        core_paragraph: "",
     });
     const [loading, setLoading] = useState(true);
     const [saved, setSaved] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                console.log("ℹ️ [TentangKamiAdmin] Fetching about page data...");
-                setData({
-                    title: "Tentang Kami",
-                    description: "Seven INC adalah perusahaan yang berfokus pada inovasi teknologi...",
-                    vision: "Menjadi pemimpin industri dalam solusi teknologi digital",
-                    mission: "Memberikan solusi terbaik untuk transformasi digital perusahaan",
-                    values: "Integritas, Inovasi, Kolaborasi",
-                });
-                setLoading(false);
-            } catch (error) {
-                console.error("❌ [TentangKamiAdmin] Error:", error);
-                setLoading(false);
-            }
-        };
-
         fetchData();
     }, []);
 
+    const fetchData = async () => {
+        try {
+            console.log("ℹ️ [TentangKamiAdmin] Fetching about page data...");
+            const response = await axios.get(`${API_BASE}/admin/about`);
+            
+            if (response.data.status && response.data.data) {
+                setData(response.data.data);
+            }
+            setLoading(false);
+        } catch (error) {
+            console.error("❌ [TentangKamiAdmin] Error:", error);
+            setError("Gagal mengambil data");
+            setLoading(false);
+        }
+    };
+
     const handleSave = async () => {
         try {
+            setError("");
             console.log("💾 [TentangKamiAdmin] Saving about page...");
-            // TODO: Send to API: PUT /api/admin/tentang-kami
-            setSaved(true);
-            setTimeout(() => setSaved(false), 3000);
+            
+            const token = localStorage.getItem("adminToken");
+            if (!token) {
+                setError("Token tidak ditemukan");
+                return;
+            }
+
+            const payload = {
+                subtitle: data.subtitle,
+                headline: data.headline,
+                left_p1: data.left_p1,
+                left_p2: data.left_p2,
+                left_p3: data.left_p3,
+                right_p1: data.right_p1,
+                right_p2: data.right_p2,
+                core_title: data.core_title,
+                core_headline: data.core_headline,
+                core_paragraph: data.core_paragraph,
+            };
+
+            const response = await axios.post(`${API_BASE}/admin/about`, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                }
+            });
+
+            if (response.data.status) {
+                setSaved(true);
+                setTimeout(() => setSaved(false), 3000);
+            } else {
+                setError(response.data.message || "Gagal menyimpan data");
+            }
         } catch (error) {
             console.error("❌ [TentangKamiAdmin] Error saving:", error);
+            setError(error.response?.data?.message || "Gagal menyimpan data");
         }
     };
 
@@ -58,55 +98,101 @@ const TentangKamiAdmin = () => {
                 {saved && <span className="text-green-400 text-sm">✓ Tersimpan</span>}
             </div>
 
+            {error && (
+                <div className="p-3 bg-red-900/20 border border-red-700 rounded-lg text-red-400 text-sm">
+                    ✕ {error}
+                </div>
+            )}
+
             <div className="bg-[#1E293B] rounded-lg border border-gray-700 p-6 space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Judul</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Subtitle</label>
                     <input
                         type="text"
-                        value={data.title}
-                        onChange={(e) => setData({ ...data, title: e.target.value })}
+                        value={data.subtitle}
+                        onChange={(e) => setData({ ...data, subtitle: e.target.value })}
                         className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                        placeholder="Subtitle halaman"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Deskripsi</label>
-                    <textarea
-                        value={data.description}
-                        onChange={(e) => setData({ ...data, description: e.target.value })}
-                        className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-24 resize-none"
-                        placeholder="Deskripsi tentang perusahaan"
-                    ></textarea>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Headline</label>
+                    <input
+                        type="text"
+                        value={data.headline}
+                        onChange={(e) => setData({ ...data, headline: e.target.value })}
+                        className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                        placeholder="Headline utama"
+                    />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Visi</label>
-                    <textarea
-                        value={data.vision}
-                        onChange={(e) => setData({ ...data, vision: e.target.value })}
-                        className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
-                        placeholder="Visi perusahaan"
-                    ></textarea>
+                <div className="border-t border-gray-700 pt-4">
+                    <h3 className="font-medium text-white mb-4">Paragraf Kiri</h3>
+                    <div className="space-y-3">
+                        <textarea
+                            value={data.left_p1}
+                            onChange={(e) => setData({ ...data, left_p1: e.target.value })}
+                            className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
+                            placeholder="Paragraf kiri 1"
+                        ></textarea>
+                        <textarea
+                            value={data.left_p2}
+                            onChange={(e) => setData({ ...data, left_p2: e.target.value })}
+                            className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
+                            placeholder="Paragraf kiri 2"
+                        ></textarea>
+                        <textarea
+                            value={data.left_p3}
+                            onChange={(e) => setData({ ...data, left_p3: e.target.value })}
+                            className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
+                            placeholder="Paragraf kiri 3"
+                        ></textarea>
+                    </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Misi</label>
-                    <textarea
-                        value={data.mission}
-                        onChange={(e) => setData({ ...data, mission: e.target.value })}
-                        className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
-                        placeholder="Misi perusahaan"
-                    ></textarea>
+                <div className="border-t border-gray-700 pt-4">
+                    <h3 className="font-medium text-white mb-4">Paragraf Kanan</h3>
+                    <div className="space-y-3">
+                        <textarea
+                            value={data.right_p1}
+                            onChange={(e) => setData({ ...data, right_p1: e.target.value })}
+                            className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
+                            placeholder="Paragraf kanan 1"
+                        ></textarea>
+                        <textarea
+                            value={data.right_p2}
+                            onChange={(e) => setData({ ...data, right_p2: e.target.value })}
+                            className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
+                            placeholder="Paragraf kanan 2"
+                        ></textarea>
+                    </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Nilai-Nilai</label>
-                    <textarea
-                        value={data.values}
-                        onChange={(e) => setData({ ...data, values: e.target.value })}
-                        className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
-                        placeholder="Nilai-nilai perusahaan"
-                    ></textarea>
+                <div className="border-t border-gray-700 pt-4">
+                    <h3 className="font-medium text-white mb-4">Core Values</h3>
+                    <div className="space-y-3">
+                        <input
+                            type="text"
+                            value={data.core_title}
+                            onChange={(e) => setData({ ...data, core_title: e.target.value })}
+                            className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                            placeholder="Judul core values"
+                        />
+                        <input
+                            type="text"
+                            value={data.core_headline}
+                            onChange={(e) => setData({ ...data, core_headline: e.target.value })}
+                            className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                            placeholder="Headline core values"
+                        />
+                        <textarea
+                            value={data.core_paragraph}
+                            onChange={(e) => setData({ ...data, core_paragraph: e.target.value })}
+                            className="w-full px-3 py-2 bg-[#0F172A] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 h-16 resize-none"
+                            placeholder="Deskripsi core values"
+                        ></textarea>
+                    </div>
                 </div>
 
                 <div className="pt-4">

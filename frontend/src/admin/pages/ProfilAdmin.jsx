@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAdminAuth } from "../../contexts/useAuth";
+import axios from "axios";
+
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000/api";
 
 const ProfilAdmin = () => {
     const { user, logout } = useAdminAuth();
@@ -13,16 +16,75 @@ const ProfilAdmin = () => {
         confirmPassword: "",
     });
     const [saved, setSaved] = useState(false);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                name: user.name || "",
+                email: user.email || "",
+                avatar: user.avatar || "",
+            }));
+        }
+    }, [user]);
 
     const handleSaveProfile = async () => {
         try {
-            console.log("💾 [ProfilAdmin] Saving profile...");
-            // TODO: Send to API: PUT /api/admin/profil
-            setSaved(true);
-            setTimeout(() => setSaved(false), 3000);
-            setIsEditing(false);
+            setError("");
+            setLoading(true);
+
+            const token = localStorage.getItem("adminToken");
+            if (!token) {
+                setError("Token tidak ditemukan");
+                return;
+            }
+
+            // Prepare payload - only send filled fields
+            const payload = {
+                name: formData.name,
+                email: formData.email,
+            };
+
+            // Add password if provided
+            if (formData.newPassword) {
+                if (formData.newPassword !== formData.confirmPassword) {
+                    setError("Password baru dan konfirmasi tidak cocok");
+                    setLoading(false);
+                    return;
+                }
+                payload.current_password = formData.currentPassword;
+                payload.password = formData.newPassword;
+                payload.password_confirmation = formData.confirmPassword;
+            }
+
+            const response = await axios.post(`${API_BASE}/admin/update-profile`, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                }
+            });
+
+            if (response.data.status) {
+                console.log("✓ [ProfilAdmin] Profil berhasil diperbarui");
+                setSaved(true);
+                setTimeout(() => setSaved(false), 3000);
+                setIsEditing(false);
+                
+                // Clear password fields
+                setFormData(prev => ({
+                    ...prev,
+                    currentPassword: "",
+                    newPassword: "",
+                    confirmPassword: "",
+                }));
+            }
         } catch (error) {
             console.error("❌ [ProfilAdmin] Error:", error);
+            setError(error.response?.data?.message || "Gagal menyimpan profil");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -72,6 +134,12 @@ const ProfilAdmin = () => {
                     </div>
                 )}
 
+                {error && (
+                    <div className="mb-6 p-3 bg-red-900/20 border border-red-700 rounded-lg text-red-400 text-sm">
+                        ✕ {error}
+                    </div>
+                )}
+
                 {isEditing && (
                     <div className="space-y-4 border-t border-gray-700 pt-6">
                         <div>
@@ -99,7 +167,7 @@ const ProfilAdmin = () => {
                         </div>
 
                         <div className="border-t border-gray-700 pt-4">
-                            <h3 className="font-medium text-white mb-4">Ubah Password</h3>
+                            <h3 className="font-medium text-white mb-4">Ubah Password (Opsional)</h3>
                             
                             <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -150,10 +218,11 @@ const ProfilAdmin = () => {
                         <div className="flex gap-3 border-t border-gray-700 pt-6">
                             <button
                                 onClick={handleSaveProfile}
-                                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+                                disabled={loading}
+                                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
                             >
                                 <i className="ri-save-line mr-2"></i>
-                                Simpan Perubahan
+                                {loading ? "Menyimpan..." : "Simpan Perubahan"}
                             </button>
                         </div>
                     </div>

@@ -1,9 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Layout from "../components/Layout";
 import Footer from "../components/Footer";
 import Container from "../components/Container";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000/api";
+
 const KontakFull = () => {
+    // API Contact Data
+    const [contact, setContact] = useState(null);
+    const [contactLoading, setContactLoading] = useState(true);
+    
+    // Fetch kontak dari API
+    useEffect(() => {
+        const fetchContact = async () => {
+            try {
+                const response = await axios.get(`${API_BASE}/public/kontak`);
+                if (response.data.data) {
+                    setContact(response.data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching contact:", error);
+            } finally {
+                setContactLoading(false);
+            }
+        };
+        
+        fetchContact();
+    }, []);
     // Email
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState(false);
@@ -42,8 +66,8 @@ const KontakFull = () => {
     const [message, setMessage] = useState("");
     const [messageTouched, setMessageTouched] = useState(false);
 
-    // Nomor WhatsApp tujuan
-    const WA_TARGET = "6289529002944";
+    // Nomor WhatsApp tujuan (dari API atau fallback)
+    const WA_TARGET = contact?.whatsapp || "6289529002944";
 
     const buildWhatsAppText = () => {
         const lines = [
@@ -109,7 +133,7 @@ const KontakFull = () => {
                             <h2 className="text-[30px] font-bold mb-3">Kantor Pusat</h2>
                             <p className="flex items-start gap-4 text-[16px] leading-relaxed">
                                 <i className="ri-map-pin-line text-[25px]"></i>
-                                Jl. Raya Janti Gg. Harjuna No.59, Jaranan, Karangjambe, Kec. Banguntapan, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55198
+                                {contactLoading ? "Memuat..." : contact?.address || "Jl. Raya Janti Gg. Harjuna No.59, Jaranan, Karangjambe, Kec. Banguntapan, Kabupaten Bantul, Daerah Istimewa Yogyakarta 55198"}
                             </p>
                         </div>
 
@@ -118,7 +142,7 @@ const KontakFull = () => {
                             <h2 className="text-[30px] font-bold mb-3">Hubungi CS Kami</h2>
                             <p className="text-[16px] mb-2 flex items-center gap-4">
                                 <img src="/assets/img/vectorPhone.png" alt="phone" className="w-[25px] h-full" />
-                                089653040200
+                                {contactLoading ? "Memuat..." : contact?.phone || "089653040200"}
                             </p>
                         </div>
 
@@ -127,7 +151,7 @@ const KontakFull = () => {
                             <h2 className="text-[30px] font-bold mb-3">Email</h2>
                             <p className="text-[16px] mb-2 flex items-center gap-4">
                                 <img src="/assets/img/vectorEmail.png" alt="email" className="w-[25px] h-full" />
-                                sevenincjogja@gmail.com
+                                {contactLoading ? "Memuat..." : contact?.email || "sevenincjogja@gmail.com"}
                             </p>
                         </div>
 
