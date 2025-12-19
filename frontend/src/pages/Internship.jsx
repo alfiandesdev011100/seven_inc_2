@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import Footer from "../components/Footer";
 import Container from "../components/Container";
@@ -43,6 +44,7 @@ const CARD_GAP = 52;
 const VISIBLE = 2;
 
 const Internship = () => {
+    const navigate = useNavigate();
     const [startIndex, setStartIndex] = useState(0);
     const isFirst = startIndex === 0;
     const isLast = startIndex + VISIBLE >= CardArray.length;
@@ -248,9 +250,12 @@ const Internship = () => {
                     {/* Grid 18 posisi */}
                     <div className="mt-12 grid grid-cols-6 gap-14">
                         {positions.map((item, index) => (
-                            <div
+                            <a
                                 key={index}
-                                className="h-[137px] flex flex-col items-center justify-center bg-white rounded-lg shadow border border-gray-200 w-full group transition-all duration-300 hover:bg-red-500"
+                                href="https://docs.google.com/forms/d/e/1FAIpQLSfdUkBHEUGA2HZvTi2rkatxN3CgH0ELRjW9YQkyiYCdAFkZ4A/viewform"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="h-[137px] flex flex-col items-center justify-center bg-white rounded-lg shadow border border-gray-200 w-full group transition-all duration-300 hover:bg-red-500 cursor-pointer"
                             >
                                 <img
                                     src={item.image}
@@ -260,7 +265,7 @@ const Internship = () => {
                                 <p className="text-sm font-semibold text-gray-800 text-center px-2 transition-all duration-300 group-hover:text-white">
                                     {item.name}
                                 </p>
-                            </div>
+                            </a>
                         ))}
                     </div>
 
@@ -311,6 +316,7 @@ const Internship = () => {
                             </h2>
                             <button
                                 className="relative overflow-hidden group rounded-4xl font-medium tracking-[0.05em] text-[20px] w-[220px] h-[60px] bg-white text-black transition-all duration-300 cursor-pointer border border-transparent"
+                                onClick={() => window.open("https://docs.google.com/forms/d/e/1FAIpQLSfdUkBHEUGA2HZvTi2rkatxN3CgH0ELRjW9YQkyiYCdAFkZ4A/viewform", "_blank")}
                                 data-aos="fade-up"
                                 data-aos-duration="1000"
                                 data-aos-once="true"

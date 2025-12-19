@@ -1,13 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-// --- KOMPONEN DIPINDAHKAN KE LUAR (Agar tidak re-render infinite loop) ---
+// --- KOMPONEN DIPINDAHKAN KE LUAR ---
 
-// 1. Komponen MenuItem
 const MenuItem = ({ to, icon, label, location }) => {
   const isActive = location.pathname === to;
 
-  // Style Classes
   const baseLinkClass =
     "flex items-center p-3 text-sm font-medium rounded-lg transition-all duration-200 group relative overflow-hidden";
   const activeLinkClass = "text-white bg-blue-600 shadow-lg shadow-blue-500/30";
@@ -38,7 +36,6 @@ const MenuItem = ({ to, icon, label, location }) => {
   );
 };
 
-// 2. Komponen DropdownMenu
 const DropdownMenu = ({
   title,
   icon,
@@ -52,14 +49,12 @@ const DropdownMenu = ({
   const isParentActive = paths.includes(location.pathname);
   const isOpen = openMenus[id];
 
-  // Auto open jika salah satu child aktif
   useEffect(() => {
     if (isParentActive && !isOpen) {
       setOpenMenus((prev) => ({ ...prev, [id]: true }));
     }
   }, [location.pathname, isParentActive, id, isOpen, setOpenMenus]);
 
-  // Style Classes
   const baseLinkClass =
     "flex items-center p-3 text-sm font-medium rounded-lg transition-all duration-200 group relative overflow-hidden";
   const activeLinkClass = "text-white bg-white/5";
@@ -109,17 +104,17 @@ const DropdownMenu = ({
   );
 };
 
-// --- MAIN COMPONENT ---
+// --- MAIN SIDEBAR ---
 const Sidebar = () => {
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState({});
-  const [userRole, setUserRole] = useState("");
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     const data = localStorage.getItem("adminData");
     if (data) {
       const parsed = JSON.parse(data);
-      setUserRole(parsed.role);
+      setRole(parsed.role);
     }
   }, []);
 
@@ -141,165 +136,206 @@ const Sidebar = () => {
         </Link>
       </div>
 
-      {/* Content */}
+      {/* MENU BERDASARKAN ROLE */}
       <div className="flex-1 px-3 py-6 overflow-y-auto custom-scrollbar">
-        {/* DASHBOARD */}
-        <ul className="space-y-1">
-          <div className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Main Menu
-          </div>
-          <MenuItem
-            to="/admin"
-            icon="ri-dashboard-3-line"
-            label="Dashboard"
-            location={location}
-          />
-        </ul>
+        
+        {/* ============================ */}
+        {/* ROLE: WRITER (admin_konten) */}
+        {/* ============================ */}
+        {role === "admin_konten" && (
+          <>
+            <ul className="space-y-1">
+              <div className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Writer Menu
+              </div>
 
-        {/* CONTENT MANAGER */}
-        <ul className="space-y-1 mt-6">
-          <div className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Content Manager
-          </div>
+              <MenuItem
+                to="/admin/berita"
+                icon="ri-newspaper-line"
+                label="Kelola Berita"
+                location={location}
+              />
 
-          <MenuItem
-            to="/admin/berita"
-            icon="ri-newspaper-line"
-            label="Berita & Artikel"
-            location={location}
-          />
-          <MenuItem
-            to="/admin/internship"
-            icon="ri-ship-line"
-            label="Program Internship"
-            location={location}
-          />
+              <MenuItem
+                to="/admin/kategori"
+                icon="ri-price-tag-3-line"
+                label="Kategori Berita"
+                location={location}
+              />
 
-          <DropdownMenu
-            title="Lowongan Kerja"
-            icon="ri-briefcase-2-line"
-            id="loker"
-            paths={[
-              "/admin/lowongan-kerja",
-              "/admin/edit-loker",
-              "/admin/edit-posisi-pekerjaan",
-              "/admin/syarat-loker",
-            ]}
-            location={location}
-            openMenus={openMenus}
-            setOpenMenus={setOpenMenus}
-          >
-            <MenuItem
-              to="/admin/lowongan-kerja"
-              icon="ri-list-check"
-              label="Daftar Pelamar"
-              location={location}
-            />
-            <MenuItem
-              to="/admin/edit-loker"
-              icon="ri-file-edit-line"
-              label="Edit Konten Loker"
-              location={location}
-            />
-            <MenuItem
-              to="/admin/edit-posisi-pekerjaan"
-              icon="ri-user-star-line"
-              label="Posisi Pekerjaan"
-              location={location}
-            />
-            <MenuItem
-              to="/admin/syarat-loker"
-              icon="ri-file-list-3-line"
-              label="Syarat & Ketentuan"
-              location={location}
-            />
-          </DropdownMenu>
-        </ul>
+              <MenuItem
+                to="/admin/media"
+                icon="ri-image-line"
+                label="Manajemen Media"
+                location={location}
+              />
+            </ul>
+          </>
+        )}
 
-        {/* SETTINGS (SUPER ADMIN) */}
-        {userRole === "super_admin" && (
-          <ul className="space-y-1 mt-6 pt-6 border-t border-gray-800">
-            <div className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Configuration
-            </div>
+        {/* ============================ */}
+        {/* ROLE: ADMIN */}
+        {/* ============================ */}
+        {role === "admin" && (
+          <>
+            {/* Dashboard */}
+            <ul className="space-y-1">
+              <div className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Main Menu
+              </div>
 
-            <DropdownMenu
-              title="Tampilan Website"
-              icon="ri-layout-masonry-line"
-              id="appearance"
-              paths={[
-                "/admin/dashboard",
-                "/admin/edit-appearance",
-                "/admin/edit-link",
-              ]}
-              location={location}
-              openMenus={openMenus}
-              setOpenMenus={setOpenMenus}
-            >
               <MenuItem
-                to="/admin/dashboard"
-                icon="ri-image-edit-line"
-                label="Navbar & Logo"
+                to="/admin"
+                icon="ri-dashboard-3-line"
+                label="Dashboard"
                 location={location}
               />
-              <MenuItem
-                to="/admin/edit-appearance"
-                icon="ri-computer-line"
-                label="Hero Section"
-                location={location}
-              />
-              <MenuItem
-                to="/admin/edit-link"
-                icon="ri-share-circle-line"
-                label="Sosial Media"
-                location={location}
-              />
-            </DropdownMenu>
+            </ul>
 
-            <DropdownMenu
-              title="Info Perusahaan"
-              icon="ri-building-4-line"
-              id="company"
-              paths={[
-                "/admin/edit-info",
-                "/admin/edit-bisnis-kami",
-                "/admin/profil",
-                "/admin/kontak",
-              ]}
-              location={location}
-              openMenus={openMenus}
-              setOpenMenus={setOpenMenus}
-            >
+            {/* Content Manager */}
+            <ul className="space-y-1 mt-6">
+              <div className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Content Manager
+              </div>
+
               <MenuItem
-                to="/admin/edit-info"
-                icon="ri-information-line"
-                label="Tentang Kami"
+                to="/admin/berita"
+                icon="ri-newspaper-line"
+                label="Berita & Artikel"
                 location={location}
               />
+
               <MenuItem
-                to="/admin/edit-bisnis-kami"
-                icon="ri-shake-hands-line"
-                label="Bisnis Kami"
+                to="/admin/internship"
+                icon="ri-ship-line"
+                label="Program Internship"
                 location={location}
               />
-              <MenuItem
-                to="/admin/kontak"
-                icon="ri-contacts-book-line"
-                label="Kontak"
+
+              <DropdownMenu
+                title="Lowongan Kerja"
+                icon="ri-briefcase-2-line"
+                id="loker"
+                paths={[
+                  "/admin/lowongan-kerja",
+                  "/admin/edit-loker",
+                  "/admin/edit-posisi-pekerjaan",
+                  "/admin/syarat-loker",
+                ]}
                 location={location}
-              />
-              <MenuItem
-                to="/admin/profil"
-                icon="ri-user-settings-line"
-                label="Akun Admin"
+                openMenus={openMenus}
+                setOpenMenus={setOpenMenus}
+              >
+                <MenuItem
+                  to="/admin/lowongan-kerja"
+                  icon="ri-list-check"
+                  label="Daftar Pelamar"
+                  location={location}
+                />
+                <MenuItem
+                  to="/admin/edit-loker"
+                  icon="ri-file-edit-line"
+                  label="Edit Konten Loker"
+                  location={location}
+                />
+                <MenuItem
+                  to="/admin/edit-posisi-pekerjaan"
+                  icon="ri-user-star-line"
+                  label="Posisi Pekerjaan"
+                  location={location}
+                />
+                <MenuItem
+                  to="/admin/syarat-loker"
+                  icon="ri-file-list-3-line"
+                  label="Syarat & Ketentuan"
+                  location={location}
+                />
+              </DropdownMenu>
+            </ul>
+
+            {/* Settings */}
+            <ul className="space-y-1 mt-6 pt-6 border-t border-gray-800">
+              <div className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Configuration
+              </div>
+
+              <DropdownMenu
+                title="Tampilan Website"
+                icon="ri-layout-masonry-line"
+                id="appearance"
+                paths={[
+                  "/admin/dashboard",
+                  "/admin/edit-appearance",
+                  "/admin/edit-link",
+                ]}
                 location={location}
-              />
-            </DropdownMenu>
-          </ul>
+                openMenus={openMenus}
+                setOpenMenus={setOpenMenus}
+              >
+                <MenuItem
+                  to="/admin/dashboard"
+                  icon="ri-image-edit-line"
+                  label="Navbar & Logo"
+                  location={location}
+                />
+                <MenuItem
+                  to="/admin/edit-appearance"
+                  icon="ri-computer-line"
+                  label="Hero Section"
+                  location={location}
+                />
+                <MenuItem
+                  to="/admin/edit-link"
+                  icon="ri-share-circle-line"
+                  label="Sosial Media"
+                  location={location}
+                />
+              </DropdownMenu>
+
+              <DropdownMenu
+                title="Info Perusahaan"
+                icon="ri-building-4-line"
+                id="company"
+                paths={[
+                  "/admin/edit-info",
+                  "/admin/edit-bisnis-kami",
+                  "/admin/profil",
+                  "/admin/kontak",
+                ]}
+                location={location}
+                openMenus={openMenus}
+                setOpenMenus={setOpenMenus}
+              >
+                <MenuItem
+                  to="/admin/edit-info"
+                  icon="ri-information-line"
+                  label="Tentang Kami"
+                  location={location}
+                />
+                <MenuItem
+                  to="/admin/edit-bisnis-kami"
+                  icon="ri-shake-hands-line"
+                  label="Bisnis Kami"
+                  location={location}
+                />
+                <MenuItem
+                  to="/admin/kontak"
+                  icon="ri-contacts-book-line"
+                  label="Kontak"
+                  location={location}
+                />
+                <MenuItem
+                  to="/admin/profil"
+                  icon="ri-user-settings-line"
+                  label="Akun Admin"
+                  location={location}
+                />
+              </DropdownMenu>
+            </ul>
+          </>
         )}
       </div>
 
-      {/* Footer */}
       <div className="flex-none absolute bottom-0 left-0 w-full px-4 py-3 bg-[#0f172a] border-t border-gray-800 md:static">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>

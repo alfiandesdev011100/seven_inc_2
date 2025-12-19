@@ -18,7 +18,7 @@ class AdminAuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:admins,email',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:super_admin,admin_konten',
+            'role' => 'required|in:admin,admin_konten',
         ]);
 
         if ($validator->fails()) {
@@ -127,6 +127,52 @@ class AdminAuthController extends Controller
             'status' => true,
             'message' => 'Nama berhasil diperbarui',
             'admin' => $admin
+        ], 200);
+    }
+
+    // 🔹 Get Current User Profile
+    public function me(Request $request)
+    {
+        $admin = $request->user();
+
+        return response()->json([
+            'status' => true,
+            'admin' => [
+                'id' => $admin->id,
+                'name' => $admin->name,
+                'email' => $admin->email,
+                'role' => $admin->role,
+                'avatar' => $admin->avatar ? asset('storage/' . $admin->avatar) : null,
+                'created_at' => $admin->created_at,
+            ]
+        ], 200);
+    }
+
+    // 🔹 Change Password Admin
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $admin = $request->user();
+
+        // Verify current password
+        if (!Hash::check($request->current_password, $admin->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Password saat ini tidak sesuai'
+            ], 401);
+        }
+
+        // Update password
+        $admin->password = Hash::make($request->new_password);
+        $admin->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password berhasil diubah'
         ], 200);
     }
 

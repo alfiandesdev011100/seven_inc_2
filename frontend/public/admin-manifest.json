@@ -1,0 +1,39 @@
+{
+  "name": "Seven INC Admin Panel",
+  "short_name": "Seven Admin",
+  "description": "Admin Panel untuk Seven INC - Manage news, jobs, internship, and more",
+  "start_url": "/admin-portal",
+  "scope": "/admin-portal",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/img/Logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/img/Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#0F172A",
+  "background_color": "#111827",
+  "shortcuts": [
+    {
+      "name": "Berita",
+      "short_name": "Berita",
+      "description": "Kelola berita",
+      "url": "/admin-portal/berita"
+    },
+    {
+      "name": "Lowongan",
+      "short_name": "Lowongan",
+      "description": "Kelola lowongan kerja",
+      "url": "/admin-portal/lowongan-kerja"
+    }
+  ]
+}

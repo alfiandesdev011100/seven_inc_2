@@ -1,0 +1,72 @@
+const CACHE_NAME = "seven-inc-writer-v1";
+const urlsToCache = [
+  "/writer-portal",
+  "/writer-portal/login",
+  "/index.html",
+  "/src/index.css",
+];
+
+// Install event
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(urlsToCache);
+    })
+  );
+});
+
+// Activate event
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Fetch event
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+
+  // ⚠️ SKIP WebSocket, HMR, and non-GET requests
+  if (request.url.includes("ws://") || 
+      request.url.includes("wss://") ||
+      request.url.includes("@vite") ||
+      request.method !== "GET") {
+    return; // Don't intercept - let browser handle it
+  }
+
+  // Skip API requests
+  if (request.url.includes("/api")) {
+    return; // Don't intercept - let browser handle it
+  }
+
+  // Cache everything else (static assets, HTML, etc)
+  event.respondWith(
+    caches.match(request).then((response) => {
+      if (response) {
+        return response;
+      }
+
+      return fetch(request).then((response) => {
+        // Don't cache non-successful responses
+        if (!response || response.status !== 200 || response.type !== "basic") {
+          return response;
+        }
+
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
+        });
+
+        return response;
+      });
+    })
+  );
+});

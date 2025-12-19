@@ -11,15 +11,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Panggil AdminSeeder untuk membuat akun Super Admin & Admin Konten
+        // Jalankan semua seeders dalam urutan yang benar
         $this->call([
-            AdminSeeder::class,
+            AdminSeeder::class,      // Buat admin & writer
+            CategorySeeder::class,   // Buat kategori berita
+            NewsSeeder::class,       // Buat berita (5 artikel dengan status berbeda)
+            CommentSeeder::class,    // Buat komentar (approved, spam, pending)
+            InternshipProgramSeeder::class,  // Buat internship programs (9 programs)
+            InternshipApplicationSeeder::class,  // Buat test data aplikasi internship (6 applications)
         ]);
-
-        // Opsional: Jika nanti butuh data dummy untuk Customer (User biasa)
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

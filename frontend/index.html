@@ -3,7 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/assets/img/card.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Seven INC - Admin & Content Management System" />
+    <meta name="theme-color" content="#0F172A" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Seven INC" />
+    
+    <!-- Manifest - Will be added dynamically in production only -->
+    <!-- Disabled in development to prevent caching issues -->
 
     <!-- Font Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,5 +29,59 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Service Worker Cleanup Script - MUST RUN BEFORE ANYTHING ELSE -->
+    <script>
+      // ====================================================
+      // AGGRESSIVE SW CLEANUP - Run immediately
+      // ====================================================
+      console.log("🔧 [BOOTUP] Service Worker cleanup starting...");
+      
+      // 1. Unregister ALL existing service workers immediately
+      if ("serviceWorker" in navigator) {
+        // Get all registrations
+        navigator.serviceWorker.getRegistrations()
+          .then((registrations) => {
+            console.log(`📋 [BOOTUP] Found ${registrations.length} Service Worker(s)`);
+            
+            // Unregister each one
+            registrations.forEach((registration) => {
+              registration.unregister()
+                .then(() => {
+                  console.log(`🧹 [BOOTUP] Unregistered: ${registration.scope}`);
+                })
+                .catch((err) => {
+                  console.error(`❌ [BOOTUP] Failed to unregister: ${err}`);
+                });
+            });
+          })
+          .catch((err) => {
+            console.error("❌ [BOOTUP] Error getting registrations:", err);
+          });
+      }
+      
+      // 2. Clear all service worker caches
+      if ("caches" in window) {
+        caches.keys()
+          .then((cacheNames) => {
+            console.log(`📋 [BOOTUP] Found ${cacheNames.length} caches`);
+            return Promise.all(
+              cacheNames.map((cacheName) => {
+                console.log(`🧹 [BOOTUP] Deleting cache: ${cacheName}`);
+                return caches.delete(cacheName);
+              })
+            );
+          })
+          .then(() => {
+            console.log("✅ [BOOTUP] All caches cleared");
+          })
+          .catch((err) => {
+            console.error("❌ [BOOTUP] Cache cleanup error:", err);
+          });
+      }
+      
+      console.log("✅ [BOOTUP] Service Worker cleanup complete");
+      console.log("⚙️ [MODE] Development mode: Native browser cache only");
+    </script>
   </body>
 </html>

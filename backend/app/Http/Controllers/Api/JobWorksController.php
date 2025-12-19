@@ -9,11 +9,32 @@ use Illuminate\Http\Request;
 // PERBAIKAN: Nama Class harus SAMA PERSIS dengan nama file (Pakai 's')
 class JobWorksController extends Controller
 {
-    // GET: Ambil semua data
+    // GET: Ambil semua data (PUBLIC)
     public function index()
     {
         $jobs = JobWork::latest()->paginate(10);
         return response()->json($jobs);
+    }
+
+    // GET: Ambil semua data untuk ADMIN (dengan authorization)
+    public function adminIndex(Request $request)
+    {
+        // Authorize: admin, admin_konten, super_admin (untuk backward compatibility)
+        if (!in_array($request->user()->role, ['admin', 'admin_konten', 'super_admin'])) {
+            abort(403, 'Anda tidak memiliki akses.');
+        }
+
+        $jobs = JobWork::latest()->paginate(10);
+        return response()->json([
+            'status' => true,
+            'data' => $jobs->items(),
+            'pagination' => [
+                'total' => $jobs->total(),
+                'per_page' => $jobs->perPage(),
+                'current_page' => $jobs->currentPage(),
+                'last_page' => $jobs->lastPage(),
+            ]
+        ]);
     }
 
     // POST: Simpan data baru

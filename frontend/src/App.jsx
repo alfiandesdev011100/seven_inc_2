@@ -9,35 +9,53 @@ function App() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
-  // Efek 1: Loading Screen
+  /* ========================================================
+      LOADING SCREEN (2 detik)
+  ======================================================== */
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000); // 2-3 detik
+    const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Efek 2: Inisialisasi Preline UI agar interaksi JS jalan
+  /* ========================================================
+      LOAD PRELINE JS
+  ======================================================== */
   useEffect(() => {
-    import("preline/preline");
+    // supaya preline tidak crash jika diimport berkali-kali
+    let isMounted = true;
+
+    import("preline/preline").then(() => {
+      if (isMounted) {
+        HSStaticMethods.autoInit();
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  /* ========================================================
+      RE-INIT PRELINE SETIAP PINDAH ROUTE
+  ======================================================== */
   useEffect(() => {
-    setTimeout(() => {
-      HSStaticMethods.autoInit();
+    const timer = setTimeout(() => {
+      try {
+        HSStaticMethods.autoInit();
+      } catch (e) {
+        console.warn("Preline init skipped:", e);
+      }
     }, 100);
+
+    return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  return (
-    <>
-      {loading ? (
-        <div className="flex justify-center items-center h-screen bg-[#1E222A]">
-          <PreLoader />
-        </div>
-      ) : (
-        <LandingContent />
-      )}
-    </>
+  return loading ? (
+    <div className="flex justify-center items-center h-screen bg-[#1E222A]">
+      <PreLoader />
+    </div>
+  ) : (
+    <LandingContent />
   );
 }
 

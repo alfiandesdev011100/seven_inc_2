@@ -4,49 +4,25 @@ import Layout from "../components/Layout";
 import Footer from "../components/Footer";
 import Container from "../components/Container";
 
-// Data dibagi per halaman
-const allCards = {
-    1: [
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorDiscussion.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication2.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/ngobrol.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/chees.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication3.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorDiscution2.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorSenyum.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/ngobrol2.png" },
-    ],
-    2: [
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorDiscussion.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication2.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/ngobrol.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/chees.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication3.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorDiscution2.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorSenyum.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/ngobrol2.png" },
-    ],
-    3: [
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorDiscussion.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication2.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/ngobrol.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/chees.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorComunication3.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorDiscution2.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorSenyum.png" },
-        { date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/ngobrol2.png" },
-    ],
-};
+// ✅ Fallback data (jika API fail)
+const FALLBACK_CARDS = [
+    { id: 1, date: "28 Jul 2025", title: "Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.", image: "/assets/img/vectorDiscussion.png" },
+    { id: 2, date: "28 Jul 2025", title: "Program Pengembangan SDM: Pelatihan Karyawan Tingkat Lanjut 2025", image: "/assets/img/vectorComunication.png" },
+    { id: 3, date: "28 Jul 2025", title: "Seven Tech Luncurkan Platform Digital Terbaru untuk Industri Fashion", image: "/assets/img/vectorComunication2.png" },
+    { id: 4, date: "28 Jul 2025", title: "Seven INC Berhasil Meraih Sertifikasi ISO 9001:2015", image: "/assets/img/ngobrol.png" },
+];
 
 const Berita = () => {
     const location = useLocation();
     const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
-    const totalPages = Object.keys(allCards).length;
-
+    
+    // ✅ NEW STATE
+    const [cards, setCards] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [totalPages, setTotalPages] = useState(1);
+    const [featured, setFeatured] = useState(null);
 
     useEffect(() => {
         if (location.state?.page) {
@@ -54,7 +30,42 @@ const Berita = () => {
         }
     }, [location.state]);
 
-    const cards = allCards[currentPage];
+    // ✅ NEW: Fetch berita dari API
+    useEffect(() => {
+        setLoading(true);
+        fetch(`http://127.0.0.1:8000/api/public/berita?page=${currentPage}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                // data.data.list = array berita
+                // data.data.meta = pagination info
+                setCards(data.data?.list || []);
+                setTotalPages(data.data?.meta?.last_page || 1);
+                
+                // Set featured = berita pertama jika halaman 1
+                if (currentPage === 1 && data.data?.featured) {
+                    setFeatured(data.data.featured);
+                }
+                
+                setError(null);
+            })
+            .catch((err) => {
+                console.error("Error fetching berita:", err);
+                setError(err.message);
+                
+                // ✅ FALLBACK: Gunakan hardcoded jika API fail
+                setCards(FALLBACK_CARDS);
+                setTotalPages(1);
+                if (!featured) setFeatured(FALLBACK_CARDS[0]);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [currentPage]);
 
     return (
         <Layout>
@@ -73,69 +84,37 @@ const Berita = () => {
                 <Container>
                     <div className="relative z-10">
                         <div className="mt-[-130px] flex justify-center">
-                            <div className="w-[1266px] h-[320px] bg-white rounded-2xl shadow-lg flex overflow-hidden">
-                                <img src="/assets/img/news.png" alt="Card Berita" className="w-[480px] h-full object-cover" />
-                                <div className="p-8 flex flex-col justify-between h-full">
-                                    <p className="text-red-500 text-sm" style={{ width: "89px", height: "30px", marginBottom: "17px" }}>
-                                        28 Jul 2025
-                                    </p>
-                                    <h2
-                                        className="text-gray-900 font-bold leading-snug"
-                                        style={{
-                                            width: "739px",
-                                            height: "60px",
-                                            fontSize: "20px",
-                                            marginBottom: "102px",
-                                            display: "-webkit-box",
-                                            WebkitLineClamp: 2,
-                                            WebkitBoxOrient: "vertical",
-                                        }}
-                                    >
-                                        Integritas dan Disiplin, Dua Pilar Penting Pembentukan SDM Berkualitas di Seven INC.
-                                    </h2>
-                                    <button
-                                        onClick={() => navigate("/isi-berita", { state: { page: currentPage } })}
-                                        className="flex items-center gap-2 text-red-500 text-sm font-medium cursor-pointer mt-[18px] group"
-                                        style={{ width: "120px", height: "63px" }}
-                                    >
-                                        <span className="transition-colors duration-300 group-hover:text-black group-hover:underline">
-                                            Lebih Lanjut
-                                        </span>
-                                        <i className="ri-arrow-right-long-line text-[17px] relative top-[2px] transition-colors duration-300 font-bold group-hover:text-black"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Grid Card */}
-                        <div className="mt-20 grid grid-cols-3 gap-x-[45px] gap-y-[80px] justify-items-center">
-                            {cards.map((card, index) => (
-                                <div key={index} className="w-[386px] h-[475px] bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
-                                    <div className="w-full h-[240px] overflow-hidden rounded-[15px]">
-                                        <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
-                                    </div>
-                                    <div className="p-4 flex flex-col flex-grow">
-                                        <p className="text-red-500 text-sm" style={{ width: "89px", height: "30px", marginBottom: "9px" }}>
-                                            {card.date}
+                            {/* ✅ Show featured news from API */}
+                            {featured ? (
+                                <div className="w-[1266px] h-[320px] bg-white rounded-2xl shadow-lg flex overflow-hidden">
+                                    <img 
+                                        src={featured.cover_url || "/assets/img/news.png"} 
+                                        alt={featured.title} 
+                                        className="w-[480px] h-full object-cover" 
+                                    />
+                                    <div className="p-8 flex flex-col justify-between h-full">
+                                        <p className="text-red-500 text-sm" style={{ width: "89px", height: "30px", marginBottom: "17px" }}>
+                                            {featured.published_at 
+                                                ? new Date(featured.published_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+                                                : "28 Jul 2025"
+                                            }
                                         </p>
-                                        <h3
+                                        <h2
                                             className="text-gray-900 font-bold leading-snug"
                                             style={{
-                                                width: "334px",
+                                                width: "739px",
                                                 height: "60px",
                                                 fontSize: "20px",
-                                                marginBottom: "18px",
+                                                marginBottom: "102px",
                                                 display: "-webkit-box",
                                                 WebkitLineClamp: 2,
                                                 WebkitBoxOrient: "vertical",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
                                             }}
                                         >
-                                            {card.title}
-                                        </h3>
+                                            {featured.title}
+                                        </h2>
                                         <button
-                                            onClick={() => navigate("/isi-berita", { state: { page: currentPage } })}
+                                            onClick={() => navigate(`/isi-berita/${featured.id}`, { state: { page: currentPage } })}
                                             className="flex items-center gap-2 text-red-500 text-sm font-medium cursor-pointer mt-[18px] group"
                                             style={{ width: "120px", height: "63px" }}
                                         >
@@ -146,7 +125,77 @@ const Berita = () => {
                                         </button>
                                     </div>
                                 </div>
-                            ))}
+                            ) : (
+                                <div className="w-[1266px] h-[320px] bg-gray-200 rounded-2xl shadow-lg flex items-center justify-center">
+                                    <p className="text-gray-600">Memuat berita...</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Grid Card */}
+                        <div className="mt-20 grid grid-cols-3 gap-x-[45px] gap-y-[80px] justify-items-center">
+                            {/* ✅ Show loading state */}
+                            {loading ? (
+                                <div className="col-span-3 py-20 text-center">
+                                    <p className="text-gray-600">Memuat berita...</p>
+                                </div>
+                            ) : cards.length > 0 ? (
+                                // ✅ Map from cards state (from API)
+                                cards.map((card) => (
+                                    <div 
+                                        key={card.id} 
+                                        className="w-[386px] h-[475px] bg-white rounded-xl shadow-lg overflow-hidden flex flex-col"
+                                    >
+                                        <div className="w-full h-[240px] overflow-hidden rounded-[15px]">
+                                            <img 
+                                                src={card.cover_url || card.image || "/assets/img/vectorDiscussion.png"} 
+                                                alt={card.title} 
+                                                className="w-full h-full object-cover"
+                                                loading="lazy"
+                                                decoding="async"
+                                            />
+                                        </div>
+                                        <div className="p-4 flex flex-col flex-grow">
+                                            <p className="text-red-500 text-sm" style={{ width: "89px", height: "30px", marginBottom: "9px" }}>
+                                                {card.published_at 
+                                                    ? new Date(card.published_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+                                                    : card.date || "28 Jul 2025"
+                                                }
+                                            </p>
+                                            <h3
+                                                className="text-gray-900 font-bold leading-snug"
+                                                style={{
+                                                    width: "334px",
+                                                    height: "60px",
+                                                    fontSize: "20px",
+                                                    marginBottom: "18px",
+                                                    display: "-webkit-box",
+                                                    WebkitLineClamp: 2,
+                                                    WebkitBoxOrient: "vertical",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                }}
+                                            >
+                                                {card.title}
+                                            </h3>
+                                            <button
+                                                onClick={() => navigate(`/isi-berita/${card.id}`, { state: { page: currentPage } })}
+                                                className="flex items-center gap-2 text-red-500 text-sm font-medium cursor-pointer mt-[18px] group"
+                                                style={{ width: "120px", height: "63px" }}
+                                            >
+                                                <span className="transition-colors duration-300 group-hover:text-black group-hover:underline">
+                                                    Lebih Lanjut
+                                                </span>
+                                                <i className="ri-arrow-right-long-line text-[17px] relative top-[2px] transition-colors duration-300 font-bold group-hover:text-black"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="col-span-3 py-20 text-center">
+                                    <p className="text-gray-600">Tidak ada berita untuk halaman ini</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Pagination */}

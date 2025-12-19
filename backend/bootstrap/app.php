@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api([
             EnsureFrontendRequestsAreStateful::class,
         ]);
+
+        // CORS Configuration - Allow frontend to communicate
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
